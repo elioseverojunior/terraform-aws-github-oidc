@@ -1,0 +1,58 @@
+repos:
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.83.4
+    hooks:
+      - id: terraform_fmt
+        args:
+          - recursive=true
+      - id: terraform_validate
+        exclude: &exclude ^\.github/.*$|^\.circleci/.*$|^\.terraform/.*$|^\.terragrunt_cache/.*$|^var[s]/.*.tfvar[s]$|^modules/.*$
+      - id: terraform_tflint
+        exclude: *exclude
+        args:
+          - --args=--only=terraform_comment_syntax
+          - --args=--only=terraform_deprecated_index
+          - --args=--only=terraform_deprecated_interpolation
+          - --args=--only=terraform_documented_outputs
+          - --args=--only=terraform_documented_variables
+          - --args=--only=terraform_module_pinned_source
+          - --args=--only=terraform_naming_convention
+          - --args=--only=terraform_required_providers
+          - --args=--only=terraform_required_version
+          - --args=--only=terraform_standard_module_structure
+          - --args=--only=terraform_typed_variables
+          - --args=--only=terraform_unused_declarations
+          - --args=--only=terraform_workspace_remote
+      - id: terraform_tfsec
+        exclude: *exclude
+        args:
+          - '--args=--exclude-downloaded-modules'
+          - '--args=--no-module-downloads'
+          - '--args=--config-file ./.tfsec.yaml'
+          - '--args=--force-all-dirs'
+      - id: terraform_docs
+        exclude: *exclude
+        args:
+          - --args=--lockfile=false
+          - --args=--config=./.terraform-docs.yml
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
+      - id: check-vcs-permalinks
+      - id: check-yaml
+      - id: detect-aws-credentials
+      - id: detect-private-key
+      - id: double-quote-string-fixer
+      - id: end-of-file-fixer
+      - id: fix-byte-order-marker
+      - id: fix-encoding-pragma
+      - id: mixed-line-ending
+        args:
+          - '--fix=auto'
+      - id: pretty-format-json
+        args:
+          - '--autofix'
+      - id: trailing-whitespace
